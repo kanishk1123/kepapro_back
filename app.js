@@ -95,7 +95,7 @@ app.post("/createuser", async (req, res, next) => {
                 const token = jwt.sign({ email: req.body.email }, "secret");
                 res.cookie("token", token, {
                     httpOnly: true,
-                    secure: false, // Set secure flag based on the environment
+                    secure: true, // Set secure flag based on the environment
                 });; // Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
