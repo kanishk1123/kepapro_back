@@ -25,14 +25,6 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-app.use(session({
-    secret: 'your_secret_key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
-
 app.use((req, res, next) => {
     const allowedOrigins = ['https://kepapro.onrender.com'];
     const origin = req.headers.origin;
@@ -46,6 +38,12 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Max-Age', '7200');
     next();
 });
+
+app.use(cors({
+    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com'],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 
 const upload = multer({ dest: 'uploads/' }); 
 
