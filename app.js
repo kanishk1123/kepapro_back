@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro-back.onrender.com','https://kepapro.onrender.com'], // Replace with your React app's domain
+    origin: 'http://localhost:5173', // Replace with your React app's domain
     credentials: true // Allow credentials (cookies)
 }));
 const upload = multer({ dest: 'uploads/' }); 
@@ -221,4 +221,9 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-app.listen(4000);
+const port = process.env.PORT || 4000;
+
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
