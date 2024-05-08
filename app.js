@@ -39,7 +39,6 @@ app.use((req, res, next) => {
     next();
 });
 
-const isSecure = req.secure || (req.headers['x-forwarded-proto'] === 'https');
 
 app.use(cors({
     origin: ['kepapro.onrender.com', 'kepapro-back.onrender.com'],
@@ -48,6 +47,7 @@ app.use(cors({
 }));
 
 const upload = multer({ dest: 'uploads/' }); 
+
 
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
@@ -76,6 +76,8 @@ app.get("/", (req, res) => {
     res.send("hello");
 });
 
+const false = req.secure || (req.headers['x-forwarded-proto'] === 'https');
+
 app.post("/createuser", async (req, res, next) => {
     try {
         const existingUser = await usermodel.findOne({ email: req.body.email });
@@ -94,7 +96,7 @@ app.post("/createuser", async (req, res, next) => {
                 const token = jwt.sign({ email: req.body.email }, "secret");
                 res.cookie("token", token, {
                     httpOnly: true,
-                    secure: isSecure, // Set secure flag based on the environment
+                    secure: false, // Set secure flag based on the environment
                 });; // Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
@@ -123,7 +125,7 @@ app.post("/createadmin", async (req, res, next) => {
                 const token = jwt.sign({ email: req.body.email }, "secret");
              res.cookie("token", token, {
     httpOnly: true,
-    secure: isSecure, // Set secure flag based on the environment
+    secure: false, // Set secure flag based on the environment
 });// Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
@@ -147,7 +149,7 @@ app.post("/login", async (req, res) => {
             const token = jwt.sign({ email: req.body.email }, "secret");
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: isSecure, // Set secure flag based on the environment
+                secure: false, // Set secure flag based on the environment
             }); // Set cookie with httpOnly flag
             return res.json({ success: true, user: { /* user data */ } });
         } else {
@@ -173,7 +175,7 @@ app.post("/adminlogin", async (req, res) => {
             const token = jwt.sign({ email: req.body.email }, "secret");
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: isSecure, // Set secure flag based on the environment
+                secure: false, // Set secure flag based on the environment
             });// Set cookie with httpOnly flag
             return res.json({ success: true, admin: { /* admin data */ } });
         } else {
