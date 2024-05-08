@@ -31,7 +31,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
     origin: ['https://kepapro.onrender.com/', 'https://kepapro-back.onrender.com/'], // Replace with your React app's domain
-    credentials: true // Allow credentials (cookies)
+    credentials: true // Allow credentials (cookies);
+    methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 const upload = multer({ dest: 'uploads/' }); 
