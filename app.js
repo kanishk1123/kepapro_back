@@ -76,7 +76,6 @@ app.get("/", (req, res) => {
     res.send("hello");
 });
 
-const false = req.secure || (req.headers['x-forwarded-proto'] === 'https');
 
 app.post("/createuser", async (req, res, next) => {
     try {
@@ -129,6 +128,7 @@ app.post("/createadmin", async (req, res, next) => {
 });// Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
+            
         });
     } catch (error) {
         console.error("Error:", error.message);
