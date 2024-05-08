@@ -51,7 +51,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro.onrender.com/'], // Replace with your React app's domain
+   
+    origin: ['*'], // Replace with your React app's domain
     credentials: true ,// Allow credentials (cookies);
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
