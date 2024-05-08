@@ -25,11 +25,12 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({
-    origin: ["*"], // Replace with your React app's domain
-    credentials: true, // Allow credentials (cookies);
-    methods: ["GET", "POST", "PUT", "DELETE"],
-}));
+const corsOptions ={
+    origin:'*', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
 
 const upload = multer({ dest: 'uploads/' }); 
 
