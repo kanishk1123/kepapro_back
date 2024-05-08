@@ -10,9 +10,29 @@ import axios from "axios";
 import multer from 'multer'
 import video from './model/video.js'
 import fs from 'fs'
+import redis from "redis"
+import connectRedis from "connect-redis";
 
 
-const app = express();
+
+
+
+const redisClient = redis.createClient({
+    // Redis configuration options
+    host: 'localhost',
+    port: 6379, // Default Redis port
+    // Add any other configuration options here
+});
+
+// Check if Redis client has a scanIterator method to determine if it's a valid Redis client
+const isRedis = "scanIterator" in redisClient;
+
+// If it's a valid Redis client, use it with connectRedis to create a RedisStore
+
+if (isRedis) {
+    const RedisStore = new connectRedis(session);
+
+}
 
 
 
@@ -20,10 +40,11 @@ const app = express();
 
 // Set up session middleware
 app.use(session({
+    store: isRedis ? new RedisStore({ client: redisClient }) : undefined,
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set secure to false if not using HTTPS
+    // Add any other session options here
 }));
 
 app.use(express.json());
