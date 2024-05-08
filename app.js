@@ -26,6 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
 
 app.use((req, res, next) => {
     const allowedOrigins = ['https://kepapro.onrender.com'];
