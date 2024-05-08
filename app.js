@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use((req, res, next) => {
-    const allowedOrigins = ['https://kepapro.onrender.com'];
+    const allowedOrigins = ['kepapro.onrender.com'];
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
@@ -90,7 +90,10 @@ app.post("/createuser", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("name","kanishk"); // Set cookie with httpOnly flag
+                res.cookie("token",token,{
+                    httpOnly: true, 
+                    secure: true, 
+                }); // Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
         });
@@ -116,7 +119,8 @@ app.post("/createadmin", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { httpOnly: true }); // Set cookie with httpOnly flag
+                res.cookie("token", token, {    httpOnly: true, 
+                    secure: true, }); // Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
         });
@@ -137,7 +141,8 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(req.body.password, user.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");
-            res.cookie("token", token, { httpOnly: true }); // Set cookie with httpOnly flag
+            res.cookie("token", token, {     httpOnly: true, 
+                secure: true,  }); // Set cookie with httpOnly flag
             return res.json({ success: true, user: { /* user data */ } });
         } else {
             console.log("Incorrect password");
@@ -160,7 +165,8 @@ app.post("/adminlogin", async (req, res) => {
         const passwordMatch = await bcrypt.compare(req.body.password, admin.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");
-            res.cookie("token", token, { httpOnly: true }); // Set cookie with httpOnly flag
+            res.cookie("token", token, {     httpOnly: true, 
+                secure: true,  }); // Set cookie with httpOnly flag
             return res.json({ success: true, admin: { /* admin data */ } });
         } else {
             console.log("Incorrect password");
