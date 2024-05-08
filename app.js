@@ -14,6 +14,10 @@ import fs from 'fs'
 
 const app = express();
 
+
+
+
+
 // Set up session middleware
 app.use(session({
     secret: 'your_secret_key',
@@ -221,4 +225,9 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-app.listen(4000);
+const port = process.env.PORT || 4000;
+
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+  })
