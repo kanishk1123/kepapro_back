@@ -11,33 +11,24 @@ import multer from 'multer'
 import video from './model/video.js'
 import fs from 'fs'
 
+
 const app = express();
-
-
-
-
-
-
-
 
 // Set up session middleware
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    // Add any other session options here
+    cookie: { secure: false } // Set secure to false if not using HTTPS
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-   
     origin: 'https://kepapro.onrender.com', // Replace with your React app's domain
     credentials: true ,// Allow credentials (cookies);
-    methods: ["GET", "POST", "PUT", "DELETE"],
-}));
-
+    methods: ["GET", "POST", "PUT", "DELETE"],}));
 const upload = multer({ dest: 'uploads/' }); 
 
 // Middleware to check for token in incoming requests
@@ -109,9 +100,7 @@ app.post("/createadmin", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { httpOnly: true ,
-                    secure:true
-                }); // Set cookie with httpOnly flag
+                res.cookie("token", token, { httpOnly: true }); // Set cookie with httpOnly flag
                 res.status(200).json({ message: "User created successfully" });
             });
         });
