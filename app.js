@@ -30,6 +30,26 @@ app.use("/token", (req, res) => {
   res.cookie("token", myVariable);
 });
 
+app.use((req, res, next) => {
+    const allowedOrigins = ["kepapro.onrender.com"];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+    );
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Private-Network", "true");
+    res.setHeader("Access-Control-Max-Age", "7200");
+    next();
+  });
+
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -85,7 +105,7 @@ app.get("/getall", async (req, res, next) => {
       res.status(500).send("Internal Server Error");
     }
   });
-  
+
   app.get("/watchall", async (req, res, next) => {
     try {
       const response = await video.find();
