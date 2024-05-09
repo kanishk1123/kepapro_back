@@ -159,7 +159,7 @@ app.post("/adminlogin", async (req, res) => {
 });
 
 
-app.post('/addlink', checkToken, async (req, res) => {
+app.post('/addlink',  async (req, res) => {
     try {
       const apiKey = '396272eryk12p9b7hdsjkc';
       const response = await axios.get(`https://doodapi.com/api/upload/url?key=${apiKey}&url=${req.body.link}
