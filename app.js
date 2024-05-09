@@ -48,7 +48,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: ["kepapro.onrender.com", "kepapro-back.onrender.com"],
+    origin: ["http://kepapro.onrender.com", "http://kepapro-back.onrender.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
