@@ -28,7 +28,7 @@ app.use(cookieParser());
 // CORS middleware
 app.use(
   cors({
-    origin: ["kepapro.onrender.com", "127.0.0.1:3000", "kepapro-back.onrender.com"],
+    origin: ["kepapro.onrender.com","kepapro-back.onrender.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
