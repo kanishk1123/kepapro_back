@@ -28,26 +28,13 @@ app.use(cookieParser());
 // CORS middleware
 app.use(
   cors({
-    origin: ["http://kepapro.onrender.com", "http://127.0.0.1:3000", "https://kepapro-back.onrender.com"],
+    origin: ["kepapro.onrender.com", "127.0.0.1:3000", "kepapro-back.onrender.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
-// Middleware to set headers
-app.use((req, res, next) => {
-  const allowedOrigins = ["http://kepapro.onrender.com", "http://127.0.0.1:3000", "https://kepapro-back.onrender.com"];
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Private-Network", "true");
-  res.setHeader("Access-Control-Max-Age", "7200");
-  next();
-});
+
 
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
