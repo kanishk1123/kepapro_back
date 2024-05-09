@@ -53,6 +53,10 @@ const checkToken = (req, res, next) => {
   }
 };
 
+app.use("/",(res,req)=>{
+  req.send("hey")
+})
+
 // Route to register a user
 app.post("/register", async (req, res) => {
   try {
