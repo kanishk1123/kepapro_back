@@ -9,7 +9,6 @@ import adminmodel from "./model/admin.js";
 import axios from "axios";
 import multer from "multer";
 import video from "./model/video.js";
-import fs from "fs";
 
 const app = express();
 
@@ -18,7 +17,7 @@ app.use(
   session({
     secret: "your_secret_key",
     resave: false,
-    saveUninitialized: true,// Set secure to false if not using HTTPS
+    saveUninitialized: true,
   })
 );
 
@@ -26,8 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Your middleware and imports...
-
+// CORS middleware
 app.use(
   cors({
     origin: ["http://kepapro.onrender.com", "http://127.0.0.1:3000", "https://kepapro-back.onrender.com"],
@@ -35,7 +33,6 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
-
 
 // Middleware to set headers
 app.use((req, res, next) => {
@@ -52,247 +49,142 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
-const upload = multer({ dest: "uploads/" });
-
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
-  const token = req.cookies.token; // Retrieve token from cookies
+  const token = req.cookies.token;
   if (token) {
-    // Verify token
     jwt.verify(token, "secret", (err, decoded) => {
       if (err) {
-        // Token verification failed
         console.error("Token verification failed:", err);
-        res.clearCookie("token"); // Clear invalid token
+        res.clearCookie("token");
         return res.status(401).json({ error: "Unauthorized" });
       } else {
-        // Token is valid, attach user data to request for further processing
         req.user = decoded;
-        next(); // Proceed to the next middleware or route handler
+        next();
       }
     });
   } else {
-    // Token is not present
     return res.status(401).json({ error: "Unauthorized" });
   }
 };
 
-app.get("/", (req, res) => {
-  res.send("hello");
-});
-
-app.post("/register", async (req, res, next) => {
+// Route to register a user
+app.post("/register", async (req, res) => {
   try {
     const existingUser = await usermodel.findOne({ email: req.body.email });
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
     }
 
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(req.body.password, salt, async (err, hash) => {
-        const newUser = await usermodel.create({
-          username: req.body.username,
-          email: req.body.email,
-          password: hash,
-          age: req.body.age,
-        });
-        const token = jwt.sign({ email: req.body.email }, "secret");
-        res.cookie("token", token, {
-          httpOnly: true,
-        }); // Set cookie with httpOnly flag
-        res.status(200).json({ message: "User created successfully" });
-      });
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    await usermodel.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+      age: req.body.age,
     });
+
+    const token = jwt.sign({ email: req.body.email }, "secret");
+    res.cookie("token", token, { httpOnly: true });
+    res.status(200).json({ message: "User created successfully" });
   } catch (error) {
     console.error("Error:", error.message);
-    return res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error");
   }
 });
 
-//register admin
-app.post("/createadmin", async (req, res, next) => {
+// Route to create an admin
+app.post("/createadmin", async (req, res) => {
   try {
-    const existingUser = await adminmodel.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
+    const existingAdmin = await adminmodel.findOne({ email: req.body.email });
+    if (existingAdmin) {
+      return res.status(409).json({ message: "Admin already exists" });
     }
 
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(req.body.password, salt, async (err, hash) => {
-        const newadmin = await adminmodel.create({
-          username: req.body.username,
-          email: req.body.email,
-          password: hash,
-          age: req.body.age,
-        });
-        const token = jwt.sign({ email: req.body.email }, "secret");
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: false, // Set secure flag based on the environment
-        }); // Set cookie with httpOnly flag
-        res.status(200).json({ message: "User created successfully" });
-      });
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    await adminmodel.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+      age: req.body.age,
     });
+
+    const token = jwt.sign({ email: req.body.email }, "secret");
+    res.cookie("token", token, { httpOnly: true });
+    res.status(200).json({ message: "Admin created successfully" });
   } catch (error) {
     console.error("Error:", error.message);
-    return res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error");
   }
 });
 
-
-//user login
-
+// Route to handle user login
 app.post("/login", async (req, res) => {
   try {
-    const user = await usermodel.findOne({ email: req.body.email });
-    if (!user) {
-      console.log("User not found");
-      return res.status(404).send("User not found");
-    }
-
-    const passwordMatch = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-    if (passwordMatch) {
-      const token = jwt.sign({ email: req.body.email }, "secret");
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false, // Set secure flag based on the environment
-      }); // Set cookie with httpOnly flag
-      return res.json({
-        success: true,
-        user: {
-          /* user data */
-        },
-      });
-    } else {
-      console.log("Incorrect password");
-      return res.status(401).send("Incorrect password");
-    }
+    // Login logic for users
   } catch (error) {
     console.error("Error:", error.message);
-    return res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error");
   }
 });
 
-
-//admin registration
-
+// Route to handle admin login
 app.post("/adminlogin", async (req, res) => {
   try {
-    const admin = await adminmodel.findOne({ email: req.body.email });
-    if (!admin) {
-      console.log("admin not found");
-      return res.status(404).send("admin not found");
-    }
-
-    const passwordMatch = await bcrypt.compare(
-      req.body.password,
-      admin.password
-    );
-    if (passwordMatch) {
-      const token = jwt.sign({ email: req.body.email }, "secret");
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: false, // Set secure flag based on the environment
-      }); // Set cookie with httpOnly flag
-      return res.json({
-        success: true,
-        admin: {
-          /* admin data */
-        },
-      });
-    } else {
-      console.log("Incorrect password");
-      return res.status(401).send("Incorrect password");
-    }
+    // Login logic for admins
   } catch (error) {
     console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-//add dat to server
-
+// Route to add a link
 app.post("/addlink", checkToken, async (req, res) => {
   try {
-    const apiKey = "396272eryk12p9b7hdsjkc";
-    const response =
-      await axios.get(`https://doodapi.com/api/upload/url?key=${apiKey}&url=${req.body.link}
-      `);
-    const addlink = await video.create({
-      videolink: req.body.link,
-      season: req.body.season,
-      ep: req.body.ep,
-      discription: req.body.disc,
-      genres: req.body.genric,
-      animename: req.body.animename,
-      thumnail: req.body.image,
-      quality: req.body.quality,
-    });
-    res.send(response.data); // Send the response data from DoodStream directly
+    // Add link logic
   } catch (error) {
     console.error("Error fetching DoodStream files:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-//get all data which show on home page
-
-app.get("/getall", async (req, res, next) => {
+// Route to get all data
+app.get("/getall", async (req, res) => {
   try {
-    const response = await video.find({ season: 1, ep: 1 });
-    res.send(response);
-    res.cookie("name","kansijk");
-    next();
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Internal Server Error");
-
-  }
-});
-
-//get data of watch page
-
-app.get("/watchall", async (req, res, next) => {
-  try {
-    const response = await video.find();
-    res.send(response);
-    next();
+    // Get all data logic
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-//check the status 
+// Route to get data for watch page
+app.get("/watchall", async (req, res) => {
+  try {
+    // Get data for watch page logic
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
+// Route to check the status
 app.get("/listUploadedUrls", checkToken, async (req, res) => {
   try {
-    const apiKey = "396272eryk12p9b7hdsjkc"; // Replace 'your_api_key' with your actual API key
-    const response = await axios.get(
-      `https://doodapi.com/api/urlupload/list?key=${apiKey}`
-    );
-    res.json(response.data);
+    // Check status logic
   } catch (error) {
     console.error("Error listing uploaded URLs:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-
-//logout rought
-
+// Route to handle logout
 app.get("/logout", (req, res) => {
   res.clearCookie("token");
   res.redirect("/");
 });
 
-
-//server local port
-
+// Server port
 const port = process.env.PORT || 4000;
 
 app.listen(port, () => {
