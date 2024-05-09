@@ -18,41 +18,41 @@ app.use(
   session({
     secret: "your_secret_key",
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }, // Set secure to false if not using HTTPS
+    saveUninitialized: true,// Set secure to false if not using HTTPS
   })
 );
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Your middleware and imports...
+
+app.use(
+  cors({
+    origin: ["http://kepapro.onrender.com", "http://127.0.0.1:3000", "https://kepapro-back.onrender.com"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+
+
+// Middleware to set headers
 app.use((req, res, next) => {
-  const allowedOrigins = ["http://kepapro.onrender.com","http://127.0.0.1:3000","https://kepapro-back.onrender.com"];
+  const allowedOrigins = ["http://kepapro.onrender.com", "http://127.0.0.1:3000", "https://kepapro-back.onrender.com"];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Private-Network", "true");
   res.setHeader("Access-Control-Max-Age", "7200");
   next();
 });
 
-app.use(
-  cors({
-    origin: ["http://kepapro.onrender.com", "http://kepapro-back.onrender.com"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+
 
 const upload = multer({ dest: "uploads/" });
 
@@ -111,6 +111,7 @@ app.post("/createuser", async (req, res, next) => {
   }
 });
 
+//register admin
 app.post("/createadmin", async (req, res, next) => {
   try {
     const existingUser = await adminmodel.findOne({ email: req.body.email });
@@ -139,6 +140,9 @@ app.post("/createadmin", async (req, res, next) => {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+
+//user login
 
 app.post("/login", async (req, res) => {
   try {
@@ -174,6 +178,9 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+//admin registration
+
 app.post("/adminlogin", async (req, res) => {
   try {
     const admin = await adminmodel.findOne({ email: req.body.email });
@@ -208,6 +215,8 @@ app.post("/adminlogin", async (req, res) => {
   }
 });
 
+//add dat to server
+
 app.post("/addlink", checkToken, async (req, res) => {
   try {
     const apiKey = "396272eryk12p9b7hdsjkc";
@@ -231,6 +240,8 @@ app.post("/addlink", checkToken, async (req, res) => {
   }
 });
 
+//get all data which show on home page
+
 app.get("/getall", async (req, res, next) => {
   try {
     const response = await video.find({ season: 1, ep: 1 });
@@ -243,6 +254,9 @@ app.get("/getall", async (req, res, next) => {
 
   }
 });
+
+//get data of watch page
+
 app.get("/watchall", async (req, res, next) => {
   try {
     const response = await video.find();
@@ -253,6 +267,8 @@ app.get("/watchall", async (req, res, next) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+//check the status 
 
 app.get("/listUploadedUrls", checkToken, async (req, res) => {
   try {
@@ -267,10 +283,16 @@ app.get("/listUploadedUrls", checkToken, async (req, res) => {
   }
 });
 
+
+//logout rought
+
 app.get("/logout", (req, res) => {
   res.clearCookie("token");
   res.redirect("/");
 });
+
+
+//server local port
 
 const port = process.env.PORT || 4000;
 
