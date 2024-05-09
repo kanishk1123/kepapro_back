@@ -86,7 +86,7 @@ app.post("/register", async (req, res) => {
 
     const token = jwt.sign({ email: req.body.email }, "secret");
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ message: "User created successfully" });
+    res.status(200).json({ message: token });
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
