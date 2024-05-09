@@ -60,7 +60,7 @@ app.get("/", (req, res) => {
     res.send("hello");
 });
 
-app.post("/createuser", async (req, res, next) => {
+app.post("/register", async (req, res, next) => {
     try {
         const existingUser = await usermodel.findOne({ email: req.body.email });
         if (existingUser) {
