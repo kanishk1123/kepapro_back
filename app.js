@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use((req, res, next) => {
-  const allowedOrigins = ["kepapro.onrender.com"];
+  const allowedOrigins = ["http://kepapro.onrender.com","http://127.0.0.1:3000","https://kepapro-back.onrender.com"];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
@@ -235,10 +235,12 @@ app.get("/getall", async (req, res, next) => {
   try {
     const response = await video.find({ season: 1, ep: 1 });
     res.send(response);
+    res.cookie("name","kansijk");
     next();
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
+
   }
 });
 app.get("/watchall", async (req, res, next) => {
