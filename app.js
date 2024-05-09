@@ -15,7 +15,7 @@ const app = express();
 // Set up session middleware
 app.use(
   session({
-    secret: "your_secret_key",
+    secret: process.env.SESSION_SECRET || "your_secret_key",
     resave: false,
     saveUninitialized: true,
   })
@@ -34,13 +34,11 @@ app.use(
   })
 );
 
-
-
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
   const token = req.cookies.token;
   if (token) {
-    jwt.verify(token, "secret", (err, decoded) => {
+    jwt.verify(token, process.env.TOKEN_SECRET || "secret", (err, decoded) => {
       if (err) {
         console.error("Token verification failed:", err);
         res.clearCookie("token");
@@ -71,7 +69,7 @@ app.post("/register", async (req, res) => {
       age: req.body.age,
     });
 
-    const token = jwt.sign({ email: req.body.email }, "secret");
+    const token = jwt.sign({ email: req.body.email }, process.env.TOKEN_SECRET || "secret");
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ message: token });
   } catch (error) {
@@ -96,7 +94,7 @@ app.post("/createadmin", async (req, res) => {
       age: req.body.age,
     });
 
-    const token = jwt.sign({ email: req.body.email }, "secret");
+    const token = jwt.sign({ email: req.body.email }, process.env.TOKEN_SECRET || "secret");
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ message: "Admin created successfully" });
   } catch (error) {
@@ -130,7 +128,7 @@ app.post("/addlink", checkToken, async (req, res) => {
   try {
     // Add link logic
   } catch (error) {
-    console.error("Error fetching DoodStream files:", error);
+    console.error("Error adding link:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -140,7 +138,7 @@ app.get("/getall", async (req, res) => {
   try {
     // Get all data logic
   } catch (error) {
-    console.error(error);
+    console.error("Error getting all data:", error);
     res.status(500).send("Internal Server Error");
   }
 });
@@ -150,7 +148,7 @@ app.get("/watchall", async (req, res) => {
   try {
     // Get data for watch page logic
   } catch (error) {
-    console.error(error);
+    console.error("Error getting data for watch page:", error);
     res.status(500).send("Internal Server Error");
   }
 });
@@ -175,5 +173,5 @@ app.get("/logout", (req, res) => {
 const port = process.env.PORT || 4000;
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
