@@ -74,6 +74,29 @@ app.post('/register', (req, res) => {
   });
 });
 
+
+app.get("/getall", async (req, res, next) => {
+    try {
+      const response = await video.find({ season: 1, ep: 1 });
+      res.send(response);
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+  
+  app.get("/watchall", async (req, res, next) => {
+    try {
+      const response = await video.find();
+      res.send(response);
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+
 app.get('/protected', verifyToken, (req, res) => {
   res.json({ message: 'Protected data' });
 });
