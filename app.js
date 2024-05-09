@@ -138,11 +138,13 @@ app.post("/addlink", checkToken, async (req, res) => {
 });
 
 // Route to get all data
-app.get("/getall", async (req, res) => {
+app.get("/getall", async (req, res ,next) => {
   try {
-    // Get all data logic
+    const response = await video.find({season:1,ep:1});
+    res.send(response);
+      next();
   } catch (error) {
-    console.error("Error getting all data:", error);
+    console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
