@@ -168,7 +168,7 @@ app.post('/addlink',  async (req, res) => {
         videolink:req.body.link, 
         season:req.body.season,
         ep:req.body.ep,
-        discription:req.body.disc,
+        description:req.body.discription,
         genres:req.body.genric,
         animename:req.body.animename,
         thumnail:req.body.image,
