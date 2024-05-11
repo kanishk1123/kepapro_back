@@ -184,7 +184,7 @@ app.post('/addlink',  async (req, res) => {
 
   app.get("/getall", async (req, res ,next) => {
     try {
-      const response = await video.find({season:1,ep:1});
+      const response = await video.find({season:1,ep:1,quality:480});
       res.send(response);
         next();
     } catch (error) {
