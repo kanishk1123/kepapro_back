@@ -159,28 +159,37 @@ app.post("/adminlogin", async (req, res) => {
 });
 
 
-app.post('/addlink',  async (req, res) => {
+app.post('/addlink', async (req, res) => {
     try {
-      const apiKey = '396272eryk12p9b7hdsjkc';
-      const response = await axios.get(`https://doodapi.com/api/upload/url?key=${apiKey}&url=${req.body.link}
-      `);
-      const addlink =  await video.create({
-        videolink:req.body.link, 
-        season:req.body.season,
-        ep:req.body.ep,
-        description:req.body.disc,
-        genres:req.body.genric,
-        animename:req.body.animename,
-        thumnail:req.body.image,
-        quality:req.body.quality
-    })
-      res.send(response.data); // Send the response data from DoodStream directly
-    } catch (error) {
-      console.error('Error fetching DoodStream files:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+        const { links, languages, season, ep, description, genres, thumbnail, qualities, animename } = req.body;
 
-  });
+        const videoDocuments = [];
+
+        for (let i = 0; i < links.length; i++) {
+            const newVideo = await video.create({
+                videolinks: {
+                    quality: qualities[i],
+                    link: links[i]
+                },
+                languages: languages[i],
+                season,
+                ep,
+                description,
+                genres,
+                thumbnail,
+                animename
+            });
+
+            videoDocuments.push(newVideo);
+        }
+
+        res.status(200).json({ message: 'Video details added successfully', videos: videoDocuments });
+    } catch (error) {
+        console.error('Error adding video details:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
   app.get("/getall", async (req, res ,next) => {
     try {
