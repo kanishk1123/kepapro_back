@@ -4,8 +4,7 @@ mongoose.connect("mongodb+srv://apimails1:F8xaA76TOrDA64Rd@cluster0.ljlgl7m.mong
 
 const videoSchema = mongoose.Schema({
     videolink: {
-        type: Object,  // Changed type to Object
-        required: true, // Ensure videolink is required
+        type: Object, // Ensure videolink is required
     },
     season: Number,
     ep: Number,
