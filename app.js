@@ -161,7 +161,7 @@ app.post("/adminlogin", async (req, res) => {
 
 app.post('/addlink', async (req, res) => {
     try {
-        const { links, languages, season, ep, description, genres, thumbnail, qualities, animename } = req.body;
+        const { links, languages, season, ep, description, genres, thumnail, qualities, animename } = req.body;
 
         const videoDocuments = [];
 
