@@ -3,13 +3,16 @@ import mongoose from "mongoose";
 mongoose.connect("mongodb+srv://apimails1:F8xaA76TOrDA64Rd@cluster0.ljlgl7m.mongodb.net/");
 
 const videoSchema = mongoose.Schema({
-    videolink: String,
+    videolink: {
+        type: Object,  // Changed type to Object
+        required: true, // Ensure videolink is required
+    },
     season: Number,
     ep: Number,
     description:String,
-    genres: [String], // Changed type to String array
+    genres: [String],
     animename: String,
-    thumnail: String, // Corrected typo
+    thumnail: String,
     quality: Number,
     view: Number,
     popular: {
