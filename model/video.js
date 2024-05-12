@@ -11,7 +11,7 @@ const videoSchema = mongoose.Schema({
     description:String,
     genres: [String],
     animename: String,
-    thumnail: String,
+    thumbnail: String,
     quality: Number,
     view: Number,
     popular: {
