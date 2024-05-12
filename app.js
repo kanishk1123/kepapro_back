@@ -167,16 +167,14 @@ app.post('/addlink', async (req, res) => {
 
         for (let i = 0; i < links.length; i++) {
             const newVideo = await video.create({
-                videolinks: {
-                    quality: qualities[i],
-                    link: links[i]
-                },
-                languages: languages[i],
+                videolink: links[i],
+                language: languages[i],
                 season,
                 ep,
                 description,
                 genres,
                 thumbnail,
+                quality: qualities[i],
                 animename
             });
 
