@@ -173,7 +173,7 @@ app.post('/addlink', async (req, res) => {
                 ep,
                 description,
                 genres,
-                thumbnail,
+                thumnail,
                 quality: qualities[i],
                 animename
             });
