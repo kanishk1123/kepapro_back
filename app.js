@@ -11,43 +11,46 @@ import multer from 'multer'
 import video from './model/video.js'
 import fs from 'fs'
 
-const app = express();
 
-app.set('https://kepapro.onrender.com', 1) // trust first proxy
+const app = express();
 
 // Set up session middleware
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    cookie: {secure: false} // Set secure to false if not using HTTPS
+    cookie: { secure: false } // Set secure to false if not using HTTPS
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com', "http://127.0.0.1:3000", "http://localhost:3000/"],
-    credentials: true,
+    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com'], // Replace with your React app's domain
+    credentials: true, // Allow credentials (cookies);
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'uploads/' }); 
 
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
-    const token = req.cookies.token;
+    const token = req.cookies.token; // Retrieve token from cookies
     if (token) {
+        // Verify token
         jwt.verify(token, 'secret', (err, decoded) => {
             if (err) {
+                // Token verification failed
                 console.error('Token verification failed:', err);
-                res.clearCookie('token');
+                res.clearCookie('token'); // Clear invalid token
                 return res.status(401).json({ error: 'Unauthorized' });
             } else {
+                // Token is valid, attach user data to request for further processing
                 req.user = decoded;
-                next();
+                next(); // Proceed to the next middleware or route handler
             }
         });
     } else {
+        // Token is not present
         return res.status(401).json({ error: 'Unauthorized' });
     }
 };
@@ -72,9 +75,8 @@ app.post("/register", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-            //    res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
-                res.cookie("token", "ascaklcaklc", { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
-                res.send(token);
+                res.cookie("token", token, { httpOnly: true }); // Set cookie with httpOnly flag
+                res.status(200).json({ message: "User created successfully" });
             });
         });
     } catch (error) {
