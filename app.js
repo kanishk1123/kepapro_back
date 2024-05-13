@@ -18,7 +18,7 @@ const app = express();
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    cookie: { secure: true } // Set secure to false if not using HTTPS
+    cookie: {} // Set secure to false if not using HTTPS
 }));
 
 app.use(express.json());
