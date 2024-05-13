@@ -19,7 +19,7 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } // Set secure to false if not using HTTPS
+    cookie: { secure: true } // Set secure to false if not using HTTPS
 }));
 
 app.use(express.json());
