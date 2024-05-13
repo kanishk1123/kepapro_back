@@ -19,7 +19,7 @@ app.set('https://kepapro.onrender.com', 1) // trust first proxy
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    cookie: {} // Set secure to false if not using HTTPS
+    cookie: {secure: false} // Set secure to false if not using HTTPS
 }));
 
 app.use(express.json());
@@ -72,7 +72,7 @@ app.post("/register", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/register", httpOnly: false, secure: false });
+                res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
                 res.status(200).json({ message: "User created successfully" });
             });
         });
