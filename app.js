@@ -72,7 +72,8 @@ app.post("/register", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
+            //    res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
+                res.cookie("token", "ascaklcaklc", { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
                 res.send(token);
             });
         });
