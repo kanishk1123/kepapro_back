@@ -11,11 +11,9 @@ import multer from 'multer'
 import video from './model/video.js'
 import fs from 'fs'
 
-
 const app = express();
 
-
- app.set('https://kepapro.onrender.com', 1) // trust first proxy
+app.set('https://kepapro.onrender.com', 1) // trust first proxy
 
 // Set up session middleware
 app.use(session({
@@ -28,32 +26,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com' ,"http://127.0.0.1:3000","http://localhost:3000/"], // Replace with your React app's domain
-    credentials: true, // Allow credentials (cookies);
+    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com', "http://127.0.0.1:3000", "http://localhost:3000/"],
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
-const upload = multer({ dest: 'uploads/' }); 
+const upload = multer({ dest: 'uploads/' });
 
 // Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
-    const token = req.cookies.token; // Retrieve token from cookies
+    const token = req.cookies.token;
     if (token) {
-        // Verify token
         jwt.verify(token, 'secret', (err, decoded) => {
             if (err) {
-                // Token verification failed
                 console.error('Token verification failed:', err);
-                res.clearCookie('token'); // Clear invalid token
+                res.clearCookie('token');
                 return res.status(401).json({ error: 'Unauthorized' });
             } else {
-                // Token is valid, attach user data to request for further processing
                 req.user = decoded;
-                next(); // Proceed to the next middleware or route handler
+                next();
             }
         });
     } else {
-        // Token is not present
         return res.status(401).json({ error: 'Unauthorized' });
     }
 };
@@ -78,9 +72,7 @@ app.post("/register", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, {  expires: new Date(Date.now() + 500000),
-      httpOnly: false, // Updated to false
-      secure: false, }); // Updated to false
+                res.cookie("token", token, { domain: "kepapro.onrender.com", path: "/", httpOnly: false, secure: false });
                 res.status(200).json({ message: "User created successfully" });
             });
         });
@@ -89,7 +81,6 @@ app.post("/register", async (req, res, next) => {
         return res.status(500).send("Internal Server Error");
     }
 });
-
 app.post("/createadmin", async (req, res, next) => {
     try {
         const existingUser = await adminmodel.findOne({ email: req.body.email });
