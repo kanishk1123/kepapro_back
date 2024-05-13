@@ -14,6 +14,9 @@ import fs from 'fs'
 
 const app = express();
 
+
+ app.set('https://kepapro.onrender.com', 1) // trust first proxy
+
 // Set up session middleware
 app.use(session({
     secret: 'your_secret_key',
