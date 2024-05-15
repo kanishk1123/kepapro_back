@@ -168,7 +168,7 @@ app.post('/addlink', async (req, res) => {
                 videolink: links[i],
                 language: languages[i],
                 season,
-                ep,
+                ep: ep[i],
                 description,
                 genres,
                 thumnail,
