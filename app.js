@@ -159,7 +159,7 @@ app.post("/adminlogin", async (req, res) => {
 
 app.post('/addlink', async (req, res) => {
     try {
-        const { links, languages, season, ep, description, genres, thumnail, qualities, animename } = req.body;
+        const { links, languages, season, ep, description,rating, genres, thumnail, qualities, animename } = req.body;
 
         const videoDocuments = [];
 
@@ -173,7 +173,8 @@ app.post('/addlink', async (req, res) => {
                 genres,
                 thumnail,
                 quality: qualities[i],
-                animename
+                rating,
+                animename,
             });
 
             videoDocuments.push(newVideo);
