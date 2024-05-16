@@ -14,6 +14,7 @@ const videoSchema = mongoose.Schema({
     thumnail: String,
     quality: Number,
     view: Number,
+    rating:Number,
     popular: {
         type: Boolean
     },
