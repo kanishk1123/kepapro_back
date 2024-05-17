@@ -5,52 +5,45 @@ import jwt from "jsonwebtoken";
 import session from "express-session";
 import cors from 'cors';
 import usermodel from "./model/user.js";
-import adminmodel from './model/admin.js'
+import adminmodel from './model/admin.js';
 import axios from "axios";
-import multer from 'multer'
-import video from './model/video.js'
-import fs from 'fs'
-
+import multer from 'multer';
+import video from './model/video.js';
 
 const app = express();
 
-// Set up session middleware
 app.use(session({
     secret: 'your_secret_key',
     resave: false,
-    cookie: { secure: false } // Set secure to false if not using HTTPS
+    saveUninitialized: true,
+    cookie: { secure: false } 
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com'], // Replace with your React app's domain
-    credentials: true, // Allow credentials (cookies);
+    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com'], 
+    credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 
 const upload = multer({ dest: 'uploads/' }); 
 
-// Middleware to check for token in incoming requests
 const checkToken = (req, res, next) => {
-    const token = req.cookies.token; // Retrieve token from cookies
+    const token = req.cookies.token; 
     if (token) {
-        // Verify token
         jwt.verify(token, 'secret', (err, decoded) => {
             if (err) {
-                // Token verification failed
                 console.error('Token verification failed:', err);
-                res.clearCookie('token'); // Clear invalid token
+                res.clearCookie('token'); 
                 return res.status(401).json({ error: 'Unauthorized' });
             } else {
-                // Token is valid, attach user data to request for further processing
                 req.user = decoded;
-                next(); // Proceed to the next middleware or route handler
+                next(); 
             }
         });
     } else {
-        // Token is not present
         return res.status(401).json({ error: 'Unauthorized' });
     }
 };
@@ -59,7 +52,7 @@ app.get("/", (req, res) => {
     res.send("hello");
 });
 
-app.post("/register", async (req, res, next) => {
+app.post("/register", async (req, res) => {
     try {
         const existingUser = await usermodel.findOne({ email: req.body.email });
         if (existingUser) {
@@ -75,7 +68,7 @@ app.post("/register", async (req, res, next) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { httpOnly: false , secure : false }); // Set cookie with httpOnly flag
+                res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'none' });
                 res.status(200).json({ message: "User created successfully" });
             });
         });
@@ -84,7 +77,8 @@ app.post("/register", async (req, res, next) => {
         return res.status(500).send("Internal Server Error");
     }
 });
-app.post("/createadmin", async (req, res, next) => {
+
+app.post("/createadmin", async (req, res) => {
     try {
         const existingUser = await adminmodel.findOne({ email: req.body.email });
         if (existingUser) {
@@ -93,14 +87,14 @@ app.post("/createadmin", async (req, res, next) => {
 
         bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(req.body.password, salt, async (err, hash) => {
-                const newadmin = await adminmodel.create({
+                const newAdmin = await adminmodel.create({
                     username: req.body.username,
                     email: req.body.email,
                     password: hash,
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { httpOnly: false, secure: false }); // Updated to false
+                res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'none' });
                 res.status(200).json({ message: "User created successfully" });
             });
         });
@@ -121,7 +115,7 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(req.body.password, user.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");
-            res.cookie("token", token, { httpOnly: false, secure: false }); // Updated to false
+            res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'none' });
             return res.json({ success: true, user: { /* user data */ } });
         } else {
             console.log("Incorrect password");
@@ -137,14 +131,14 @@ app.post("/adminlogin", async (req, res) => {
     try {
         const admin = await adminmodel.findOne({ email: req.body.email });
         if (!admin) {
-            console.log("admin not found");
-            return res.status(404).send("admin not found");
+            console.log("Admin not found");
+            return res.status(404).send("Admin not found");
         }
 
         const passwordMatch = await bcrypt.compare(req.body.password, admin.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");
-            res.cookie("token", token, { httpOnly: false, secure: false }); // Updated to false
+            res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'none' });
             return res.json({ success: true, admin: { /* admin data */ } });
         } else {
             console.log("Incorrect password");
@@ -156,10 +150,9 @@ app.post("/adminlogin", async (req, res) => {
     }
 });
 
-
 app.post('/addlink', async (req, res) => {
     try {
-        const { links, languages, season, ep, description,rating, genres, thumnail, qualities, animename } = req.body;
+        const { links, languages, season, ep, description, rating, genres, thumnail, qualities, animename } = req.body;
 
         const videoDocuments = [];
 
@@ -187,34 +180,29 @@ app.post('/addlink', async (req, res) => {
     }
 });
 
-
-  app.get("/getall", async (req, res ,next) => {
+app.get("/getall", async (req, res) => {
     try {
-      const response = await video.find({season:1,ep:1,quality:720});
-      res.send(response);
-        next();
+        const response = await video.find({ season: 1, ep: 1, quality: 720 });
+        res.send(response);
     } catch (error) {
-      console.error(error);
-      res.status(500).send("Internal Server Error");
+        console.error(error);
+        res.status(500).send("Internal Server Error");
     }
-  });
-  app.get("/watchall",async(req,res,next)=>{
+});
+
+app.get("/watchall", async (req, res) => {
     try {
         const response = await video.find();
         res.send(response);
-          next();
-      } catch (error) {
+    } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
-      }
-    });
+    }
+});
 
-  
-
-
-  app.get("/listUploadedUrls", checkToken, async (req, res) => {
+app.get("/listUploadedUrls", checkToken, async (req, res) => {
     try {
-        const apiKey = '396272eryk12p9b7hdsjkc'; // Replace 'your_api_key' with your actual API key
+        const apiKey = '396272eryk12p9b7hdsjkc'; 
         const response = await axios.get(`https://doodapi.com/api/urlupload/list?key=${apiKey}`);
         res.json(response.data);
     } catch (error) {
@@ -223,7 +211,6 @@ app.post('/addlink', async (req, res) => {
     }
 });
 
-
 app.get("/logout", (req, res) => {
     res.clearCookie("token"); 
     res.redirect("/");
@@ -231,7 +218,6 @@ app.get("/logout", (req, res) => {
 
 const port = process.env.PORT || 4000;
 
-
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-  })
+    console.log(`Example app listening on port ${port}`);
+});
