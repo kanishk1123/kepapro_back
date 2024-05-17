@@ -49,8 +49,9 @@ const checkToken = (req, res, next) => {
 };
 
 app.get("/", (req, res) => {
-    res.cookies("hey","kansihk")
+    res.cookie("hey", "kansihk").send("Cookie set successfully!");
 });
+
 
 app.post("/register", async (req, res) => {
     try {
