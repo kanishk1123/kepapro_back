@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com'], 
+    origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com',"https://kepapro.vercel.app"], 
     credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
