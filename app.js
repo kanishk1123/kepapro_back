@@ -50,6 +50,7 @@ const checkToken = (req, res, next) => {
 
 app.get("/", (req, res) => {
     res.send("hello");
+    res.cookies("hey","kansihk")
 });
 
 app.post("/register", async (req, res) => {
