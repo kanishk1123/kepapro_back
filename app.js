@@ -70,7 +70,7 @@ app.post("/register", async (req, res) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
-                res.cookie("token", token, { httpOnly: true, secure: false, sameSite: 'none' });
+                res.cookie("token", token, { httpOnly: true, secure: true, sameSite: 'none' });
                 res.status(200).json({ message: "User created successfully" });
             });
         });
