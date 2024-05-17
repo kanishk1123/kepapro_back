@@ -16,7 +16,7 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false } 
+    cookie: { secure: true } 
 }));
 
 app.use(express.json());
@@ -26,6 +26,7 @@ app.use(cors({
     origin: ['https://kepapro.onrender.com', 'https://kepapro-back.onrender.com',"https://kepapro.vercel.app"], 
     credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
+    secure: true,
 }));
 
 const upload = multer({ dest: 'uploads/' }); 
