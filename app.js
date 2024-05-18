@@ -152,7 +152,7 @@ app.post("/adminlogin", async (req, res) => {
     }
 });
 
-app.post('/addlink', async (req, res) => {
+app.post('/addlink', checkToken , async (req, res) => {
     try {
         const { links, languages, season, ep, description, rating, genres, thumnail, qualities, animename } = req.body;
 
@@ -192,7 +192,7 @@ app.get("/getall", async (req, res) => {
     }
 });
 
-app.get("/watchall", checkToken ,async (req, res) => {
+app.get("/watchall",async (req, res) => {
     try {
         const response = await video.find();
         res.send(response);
