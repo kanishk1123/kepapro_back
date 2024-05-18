@@ -212,7 +212,7 @@ app.get("/getall", async (req, res) => {
     }
 });
 
-app.get("/watchall",checkToken ,async (req, res) => {
+app.get("/watchall" ,async (req, res) => {
     try {
         const response = await video.find();
         res.send(response);
