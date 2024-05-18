@@ -70,7 +70,6 @@ app.post("/register", async (req, res) => {
                     age: req.body.age,
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");res.cookie("token", token, { 
-  httpOnly: true, 
   secure: true, 
   sameSite: 'none', 
   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Setting expiration date to 30 days from now
@@ -102,7 +101,6 @@ app.post("/createadmin", async (req, res) => {
                 });
                 const token = jwt.sign({ email: req.body.email }, "secret");
 res.cookie("token", token, { 
-  httpOnly: true, 
   secure: true, 
   sameSite: 'none', 
   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Setting expiration date to 30 days from now
@@ -127,7 +125,6 @@ app.post("/login", async (req, res) => {
         const passwordMatch = await bcrypt.compare(req.body.password, user.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");res.cookie("token", token, { 
-  httpOnly: true, 
   secure: true, 
   sameSite: 'none', 
   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Setting expiration date to 30 days from now
@@ -155,7 +152,6 @@ app.post("/adminlogin", async (req, res) => {
         const passwordMatch = await bcrypt.compare(req.body.password, admin.password);
         if (passwordMatch) {
             const token = jwt.sign({ email: req.body.email }, "secret");res.cookie("token", token, { 
-  httpOnly: true, 
   secure: true, 
   sameSite: 'none', 
   expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // Setting expiration date to 30 days from now
