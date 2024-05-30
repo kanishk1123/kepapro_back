@@ -12,6 +12,7 @@ const adminSchema = mongoose.Schema({
     email:String,
     password: String,
     passkey:String,
+    admin::String,
 });
 
 const admin = mongoose.model("admin", adminSchema);
