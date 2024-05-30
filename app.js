@@ -106,7 +106,7 @@ app.post("/createadmin", async (req, res) => {
                     password: hash,
                     age: req.body.age,
                 });
-                Token = jwt.sign({ email: req.body.email , username : req.body.username , Admin : "yes"  }, process.env.JWT_SECRET || 'secret');
+                Token = jwt.sign({ email: req.body.email , username : req.body.username , Admin : process.env.ADMIN_SECRET }, process.env.JWT_SECRET || 'secret');
                 res.send(Token);
             });
         });
